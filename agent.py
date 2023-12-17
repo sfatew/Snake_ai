@@ -3,6 +3,7 @@ import random
 import numpy as np
 from snake_game_ai import SnakeGameAI, Direction, Point
 from collections import deque   #double-end queue
+from plot import plot
 
 Max_Memory = 100000
 Batch_size = 1024
