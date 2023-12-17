@@ -98,9 +98,18 @@ class Agent:
         else:
             #explotation
             state0 = torch.tensor(state, dtype=torch.float)
-            prediction = self.model(state0)
+            prediction = self.model(state0)         # put state0 into forward in modal 
             move = torch.argmax(prediction).item()
             final_move[move] = 1
+
+        return final_move
+
+    def exploit_act(self,state):
+        final_move = [0,0,0]
+        state0 = torch.tensor(state, dtype=torch.float)
+        prediction = self.model(state0)         # put state0 into forward in modal 
+        move = torch.argmax(prediction).item()
+        final_move[move] = 1
 
         return final_move
 
@@ -117,6 +126,7 @@ def train():
 
         #get move
         final_move = agent.get_action(state_old)
+        # final_move = agent.exploit_act(state_old)
 
         #perform move and get new state
         reward, game_over, score = game.play_step(final_move)

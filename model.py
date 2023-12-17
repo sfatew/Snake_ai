@@ -32,7 +32,7 @@ class QTrainer:
         self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
         self.criterion = nn.MSELoss()
 
-    def train_step(self, state, action, reward, next_state, done):
+    def train_step(self, state, action, reward, next_state, game_over):
         state = torch.tensor(state, dtype=torch.float)
         next_state = torch.tensor(next_state, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
@@ -40,29 +40,34 @@ class QTrainer:
         # (n, x)
 
         if len(state.shape) == 1:
-            # (1, x)
+            # add 1 dimention with the len of 1: turn x -> (1, x)
+            # eg x is 2D --unsqueeze--> 3D (the added dim has len=1)
+            # unsqeeze(0): [[2,3],[3,4]] --> [[[2,3],[3,4]]]
             state = torch.unsqueeze(state, 0)
             next_state = torch.unsqueeze(next_state, 0)
             action = torch.unsqueeze(action, 0)
             reward = torch.unsqueeze(reward, 0)
-            done = (done, )
+            game_over = (game_over, )
 
         # 1: predicted Q values with current state
         pred = self.model(state)
 
+        # 2: Q_new = r + y * max(next_predicted Q value) -> only do this if not game_over
+            #r: reward
+        # pred.clone()
+        # preds[argmax(action)] = Q_new
+
         target = pred.clone()
-        for idx in range(len(done)):
+        for idx in range(len(game_over)):
             Q_new = reward[idx]
-            if not done[idx]:
+            if not game_over[idx]:
                 Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
 
             target[idx][torch.argmax(action[idx]).item()] = Q_new
     
-        # 2: Q_new = r + y * max(next_predicted Q value) -> only do this if not done
-        # pred.clone()
-        # preds[argmax(action)] = Q_new
-        self.optimizer.zero_grad()
+        
+        self.optimizer.zero_grad()      #empty the gradian
         loss = self.criterion(target, pred)
-        loss.backward()
+        loss.backward()                 #backpropagation
 
         self.optimizer.step()
