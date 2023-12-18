@@ -158,7 +158,7 @@ def train():
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
 
-    agent.model.checkpoit()
+    agent.trainer.checkpoint()
 
 if __name__=='__main__':
     train()
