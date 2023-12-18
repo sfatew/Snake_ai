@@ -120,6 +120,7 @@ def train():
     record = 0              #best score
     agent = Agent()
     game = SnakeGameAI()
+
     while True:
         # get old state
         state_old = agent.get_state(game)
@@ -157,6 +158,7 @@ def train():
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
 
+    agent.model.checkpoit()
 
 if __name__=='__main__':
     train()
