@@ -15,14 +15,6 @@ class Linear_QNet(nn.Module):
         x = self.linear2(x)
         return x
 
-    def save(self, file_name='model.pth'):
-        model_folder_path = './model'
-        if not os.path.exists(model_folder_path):
-            os.makedirs(model_folder_path)
-
-        file_name = os.path.join(model_folder_path, file_name)
-        torch.save(self.state_dict(), file_name)
-
 
 class QTrainer:
     def __init__(self, model, lr, gamma):
@@ -58,6 +50,7 @@ class QTrainer:
         # preds[argmax(action)] = Q_new
 
         target = pred.clone()
+        # Q-learning update
         for idx in range(len(game_over)):
             Q_new = reward[idx]
             if not game_over[idx]:
@@ -72,16 +65,4 @@ class QTrainer:
 
         self.optimizer.step()
 
-    def checkpoint(self, file_name='checkpoint.pth'):
-        model_folder_path = './model'
-        if not os.path.exists(model_folder_path):
-            os.makedirs(model_folder_path)
 
-        file_name = os.path.join(model_folder_path, file_name)
-
-        checkpoint = {
-            "model_state": self.model.state_dict(),
-            "optim_state": self.optimizer.state_dict()
-        }
-
-        torch.save(checkpoint, file_name)
