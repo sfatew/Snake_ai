@@ -15,11 +15,14 @@ class Agent:
     def __init__(self):
         self.n_games = 0    #number of game
         self.epsilon = 0    #randomness control
-        self.gamma = 0.9      #discount rate
+        self.gamma = 0.8      #discount rate
         self.memory = deque(maxlen=Max_Memory)  #when the memory was exceeded, auto popleft()
-        self.model = Linear_QNet(11, 256, 3)
+        self.model = Linear_QNet(13, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         self.record = 0              #best score
+
+        self.turnleftcont=0
+        self.turnrightcont=0
 
     def get_state(self, game):
         head = game.snake[0]
@@ -67,7 +70,10 @@ class Agent:
             game.food.x < game.head.x,  # food left
             game.food.x > game.head.x,  # food right
             game.food.y < game.head.y,  # food up
-            game.food.y > game.head.y  # food down
+            game.food.y > game.head.y,  # food down
+
+            self.turnleftcont,
+            self.turnrightcont
             ]
 
         return np.array(state, dtype=int)   #dtype int turn True to 1 and False to 0
@@ -103,6 +109,20 @@ class Agent:
             move = torch.argmax(prediction).item()
             final_move[move] = 1
 
+            if self.turnleftcont ==0:
+                if move==1:
+                    self.turnrightcont +=1
+            else:
+                self.turnleftcont = 0
+                self.turnrightcont = 1
+
+            if self.turnrightcont ==0:
+                if move==2:
+                    self.turnleftcont +=1
+            else:
+                self.turnrightcont = 0
+                self.turnleftcont = 1
+
         return final_move
 
     def exploit_act(self,state):
@@ -124,7 +144,7 @@ def train():
 
     if os.path.exists('model/checkpoint.pth'):
         load_checkpoint = torch.load('model/checkpoint.pth')
-        print(load_checkpoint)
+        # print(load_checkpoint)
 
         agent.n_games = load_checkpoint["n_games"]
         agent.record = load_checkpoint["record"]
@@ -221,7 +241,6 @@ def run():
 
         #get move
         final_move = agent.exploit_act(state_old)
-        # final_move = agent.exploit_act(state_old)
 
         #perform move and get new state
         reward, game_over, score = game.play_step(final_move)

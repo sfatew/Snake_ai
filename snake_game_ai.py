@@ -23,9 +23,10 @@ RED = (200,0,0)
 BLUE1 = (0, 0, 255)
 BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
+GREEN = (0 , 255 , 0 )
 
 BLOCK_SIZE = 20
-SPEED = 99999
+SPEED = 9999
 
 class SnakeGameAI:
     
@@ -119,6 +120,7 @@ class SnakeGameAI:
             pygame.draw.rect(self.display, BLUE1, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE)) #draw a rectangle: (on plane, color, (left,top,widht,height))
             pygame.draw.rect(self.display, BLUE2, pygame.Rect(pt.x+4, pt.y+4, 12, 12))
 
+        pygame.draw.rect(self.display, GREEN, pygame.Rect(self.head.x, self.head.y, BLOCK_SIZE, BLOCK_SIZE))
         #display the food 
         pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
         

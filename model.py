@@ -41,7 +41,7 @@ class QTrainer:
             reward = torch.unsqueeze(reward, 0)
             game_over = (game_over, )
 
-        # 1: predicted Q values with current state
+        # 1: predicted policy values with current state
         pred = self.model(state)
 
         # 2: Q_new = r + y * max(next_predicted Q value) -> only do this if not game_over
