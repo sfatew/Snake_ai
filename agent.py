@@ -24,8 +24,10 @@ class Agent:
         self.turnleftcont=0
         self.turnrightcont=0
 
+
     def get_state(self, game):
         head = game.snake[0]
+
 
         # check 1 block in each direction
         point_l = Point(head.x - 20, head.y)
@@ -74,6 +76,7 @@ class Agent:
 
             self.turnleftcont,
             self.turnrightcont
+
             ]
 
         return np.array(state, dtype=int)   #dtype int turn True to 1 and False to 0

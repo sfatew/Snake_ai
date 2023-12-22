@@ -50,6 +50,8 @@ class SnakeGameAI:
                       Point(self.head.x-BLOCK_SIZE, self.head.y),
                       Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
         
+        self.lensnake=len(self.snake)
+        
         self.score = 0
         self.food = None
         self._place_food()
@@ -89,6 +91,7 @@ class SnakeGameAI:
         if self.head == self.food:
             self.score += 1
             reward = 10
+            self.lensnake += 1
             self._place_food()
         else:
             self.snake.pop()
