@@ -17,13 +17,30 @@ class Agent:
         self.epsilon = 0    #randomness control
         self.gamma = 0.8      #discount rate
         self.memory = deque(maxlen=Max_Memory)  #when the memory was exceeded, auto popleft()
-        self.model = Linear_QNet(13, 256, 3)
+        self.model = Linear_QNet(14, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         self.record = 0              #best score
 
-        self.turnleftcont=0
-        self.turnrightcont=0
+    def check_empty_block(self, game, point):
+        checked=deque([])      # list of empty block & including the head
+        point_l = Point(point.x - 20, point.y)
+        point_r = Point(point.x + 20, point.y)
+        point_u = Point(point.x, point.y - 20)
+        point_d = Point(point.x, point.y + 20)
+        if game.is_collision(point):
+            return None
+        else:
+            checked.append(point)
+            if not game.is_collision(point_d) and point_d not in checked:
+                self.check_empty_block(game,point_d)
+            if not game.is_collision(point_l) and point_l not in checked:
+                self.check_empty_block(game,point_l)
+            if not game.is_collision(point_r) and point_r not in checked:
+                self.check_empty_block(game,point_r)
+            if not game.is_collision(point_u) and point_u not in checked:
+                self.check_empty_block(game,point_u)
 
+        return checked
 
     def get_state(self, game):
         head = game.snake[0]
@@ -41,6 +58,23 @@ class Agent:
         dir_r = game.direction == Direction.RIGHT
         dir_u = game.direction == Direction.UP
         dir_d = game.direction == Direction.DOWN
+
+        if dir_d:
+            check_straight = len(self.check_empty_block(game,point_d))
+            check_right = len(self.check_empty_block(game,point_l))
+            check_left = len(self.check_empty_block(game,point_r))
+        if dir_r:
+            check_straight = len(self.check_empty_block(game,point_r))
+            check_right = len(self.check_empty_block(game,point_d))
+            check_left = len(self.check_empty_block(game,point_u))
+        if dir_l:
+            check_straight = len(self.check_empty_block(game,point_l))
+            check_right = len(self.check_empty_block(game,point_u))
+            check_left = len(self.check_empty_block(game,point_d))
+        if dir_u:
+            check_straight = len(self.check_empty_block(game,point_u))
+            check_right = len(self.check_empty_block(game,point_r))
+            check_left = len(self.check_empty_block(game,point_l))
 
         state = [
             # danger in 1 block
@@ -74,8 +108,9 @@ class Agent:
             game.food.y < game.head.y,  # food up
             game.food.y > game.head.y,  # food down
 
-            self.turnleftcont,
-            self.turnrightcont
+            check_straight,
+            check_right,
+            check_left
 
             ]
 
@@ -112,26 +147,12 @@ class Agent:
             move = torch.argmax(prediction).item()
             final_move[move] = 1
 
-            if self.turnleftcont ==0:
-                if move==1:
-                    self.turnrightcont +=1
-            else:
-                self.turnleftcont = 0
-                self.turnrightcont = 1
-
-            if self.turnrightcont ==0:
-                if move==2:
-                    self.turnleftcont +=1
-            else:
-                self.turnrightcont = 0
-                self.turnleftcont = 1
-
         return final_move
 
     def exploit_act(self,state):
         final_move = [0,0,0]
         state0 = torch.tensor(state, dtype=torch.float)
-        prediction = self.model(state0)         # put state0 into forward in modal 
+        prediction = self.model(state0)         # put state0 into forward func in modal 
         move = torch.argmax(prediction).item()
         final_move[move] = 1
 
@@ -228,7 +249,6 @@ def train():
 def run():
     agent = Agent()
     game = SnakeGameAI()
-    agent.record = 0              #best score
 
     if os.path.exists('model/model.pth'):
             load_save = torch.load('model/model.pth')
@@ -251,7 +271,7 @@ def run():
         state_new = agent.get_state(game)
 
         if game_over:
-            print('Game', agent.n_games, 'Score', score, 'Record:', agent.record)
+            print( 'Score', score)
             break
 
 

@@ -10,5 +10,6 @@
 # qo=q()
 # print(qo.c)
 
-if not False:
+a=[1,2,3]
+if 4 not in a:
     print('.')
