@@ -17,7 +17,7 @@ class Agent:
         self.epsilon = 0    #randomness control
         self.gamma = 0.8      #discount rate
         self.memory = deque(maxlen=Max_Memory)  #when the memory was exceeded, auto popleft()
-        self.model = Linear_QNet(15, 256, 3)
+        self.model = Linear_QNet(14, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         self.record = 0              #best score
 
@@ -161,9 +161,7 @@ class Agent:
             # check the number of fesible block if we go straight, right, left
             check_straight/(game_size-game.lensnake),
             check_right/(game_size-game.lensnake),
-            check_left/(game_size-game.lensnake),
-
-            game.lensnake/game_size
+            check_left/(game_size-game.lensnake)
 
             ]
 
@@ -217,6 +215,7 @@ def train():
     total_score = 0
     agent = Agent()
     game = SnakeGameAI()
+    numgame = 0 # number of game since starting the train() func
 
 
     if os.path.exists('model/checkpoint_1.pth'):
@@ -254,6 +253,7 @@ def train():
             # train long memory, plot result
             game.reset()
             agent.n_games += 1
+            numgame += 1
             agent.train_long_memory()
 
             if score > agent.record:
@@ -279,7 +279,7 @@ def train():
 
             plot_scores.append(score)
             total_score += score
-            mean_score = total_score / agent.n_games
+            mean_score = total_score / numgame
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
 
