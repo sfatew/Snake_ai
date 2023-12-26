@@ -26,11 +26,11 @@ BLACK = (0,0,0)
 GREEN = (0 , 255 , 0 )
 
 BLOCK_SIZE = 20
-SPEED = 999999
+SPEED = 30
 
 class SnakeGameAI:
     
-    def __init__(self, w=720, h=480):
+    def __init__(self,count_iteration, w=720, h=480):
         #dimensions
         self.w = w
         self.h = h

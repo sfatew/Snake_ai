@@ -1,7 +1,7 @@
 import torch
 import random
 import numpy as np
-from snake_game_ai import SnakeGameAI, Direction, Point
+from game import SnakeGameAI, Direction, Point
 from collections import deque   #double-end queue
 from plot import plot
 from model import Linear_QNet, QTrainer
@@ -215,6 +215,7 @@ def train():
     total_score = 0
     agent = Agent()
     game = SnakeGameAI()
+
     numgame = 0 # number of game since starting the train() func
 
 
@@ -227,8 +228,8 @@ def train():
         agent.model.load_state_dict(load_checkpoint["model_state"])
         agent.trainer.optimizer.load_state_dict(load_checkpoint["optim_state"])
 
-        # print(agent.record)
-        # print(agent.n_games)
+    game.high_score = agent.record
+    game.count_iteration = agent.n_games
 
     while True:
         # get old state
@@ -302,6 +303,7 @@ def train():
 def run():
     agent = Agent()
     game = SnakeGameAI()
+
 
     if os.path.exists('model/model_1.pth'):
             load_save = torch.load('model/model_1.pth')
