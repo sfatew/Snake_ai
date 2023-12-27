@@ -218,8 +218,8 @@ def train():
 
     numgame = 0 # number of game since starting the train() func
 
-    if os.path.exists('model/checkpoint.pth'):
-        load_checkpoint = torch.load('model/checkpoint.pth')
+    if os.path.exists('model/checkpoint_2.pth'):
+        load_checkpoint = torch.load('model/checkpoint_2.pth')
         # print(load_checkpoint)
 
         agent.n_games = load_checkpoint["n_games"]
@@ -263,7 +263,7 @@ def train():
                 if not os.path.exists(model_folder_path):
                     os.makedirs(model_folder_path)
 
-                file_name = os.path.join(model_folder_path, 'model.pth')
+                file_name = os.path.join(model_folder_path, 'model_2.pth')
 
                 save_best = {
                     "model_state": agent.model.state_dict(),
@@ -288,7 +288,7 @@ def train():
         if not os.path.exists(model_folder_path):
             os.makedirs(model_folder_path)
 
-        file_name = os.path.join(model_folder_path, 'checkpoint.pth')
+        file_name = os.path.join(model_folder_path, 'checkpoint_2.pth')
 
         checkpoint = {
             "n_games": agent.n_games,
@@ -303,8 +303,8 @@ def run():
     agent = Agent()
     game = SnakeGameAI()
 
-    if os.path.exists('model/model.pth'):
-            load_save = torch.load('model/model.pth')
+    if os.path.exists('model/model_2.pth'):
+            load_save = torch.load('model/model_2.pth')
             agent.model.load_state_dict(load_save["model_state"])
             agent.trainer.optimizer.load_state_dict(load_save["optim_state"])
 

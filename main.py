@@ -1,4 +1,4 @@
-from agent import train, run
+from agenttest2 import train, run
 
 # train()
 run()
