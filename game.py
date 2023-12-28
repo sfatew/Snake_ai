@@ -29,11 +29,11 @@ HEAD = (0,150,255)
 HEAD2 = (0,250,255)
 
 BLOCK_SIZE = 20
-SPEED = 30
+SPEED = 9999999
 
 class SnakeGameAI:
     
-    def __init__(self, w=720, h=480):
+    def __init__(self, w=640, h=480):
         self.w = w
         self.h = h
         # init display

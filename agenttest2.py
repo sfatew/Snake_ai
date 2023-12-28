@@ -303,13 +303,16 @@ def run():
     agent = Agent()
     game = SnakeGameAI()
 
-    if os.path.exists('model/model_2.pth'):
-            load_save = torch.load('model/model_2.pth')
-            agent.model.load_state_dict(load_save["model_state"])
-            agent.trainer.optimizer.load_state_dict(load_save["optim_state"])
 
-            # for param in agent.model.parameters():
-            #     print(param)
+    if os.path.exists('model/checkpoint_1.pth'):
+        load_checkpoint = torch.load('model/checkpoint_1.pth')
+        # print(load_checkpoint)
+
+        agent.n_games = load_checkpoint["n_games"]
+        agent.record = load_checkpoint["record"]
+        agent.model.load_state_dict(load_checkpoint["model_state"])
+        agent.trainer.optimizer.load_state_dict(load_checkpoint["optim_state"])
+
 
     while True:
         # get old state
